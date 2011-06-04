@@ -432,7 +432,7 @@ module Handsoap
           Handsoap.pretty_format_envelope(body).chomp
         end)
       end
-      xml_document = parse_soap_response_document(response.primary_part.body)
+      xml_document = parse_soap_response_document(response.response)
       soap_fault = parse_soap_fault(xml_document)
       # Is the response a soap-fault?
       unless soap_fault.nil?
