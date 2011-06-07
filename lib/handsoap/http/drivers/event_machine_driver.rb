@@ -9,6 +9,27 @@ module Handsoap
           require 'em-http'
         end
 
+        def send_http_request(request)
+          emr = EventMachine::HttpRequest.new(request.url)
+          if request.username && request.password
+            # TODO: Verify that this is actually supported?
+            request.headers['authorization'] = [request.username, request.password]
+          end
+          case request.http_method
+          when :get
+            emdef = emr.get(:head => request.headers)
+          when :post
+            emdef = emr.post(:head => request.headers, :body => request.body)
+          when :put
+            emdef = emr.put(:head => request.headers, :body => request.body)
+          when :delete
+            emdef = emr.delete
+          else
+            raise "Unsupported request method #{request.http_method}"
+          end
+          emdef
+        end
+
         def send_http_request_async(request)
           emr = EventMachine::HttpRequest.new(request.url)
 

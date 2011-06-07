@@ -427,14 +427,14 @@ module Handsoap
           Handsoap.pretty_format_envelope(body).chomp
         end)
       end
-      xml_document = parse_soap_response_document(response.primary_part.body)
+      xml_document = parse_soap_response_document(response.response)
       soap_fault = parse_soap_fault(xml_document)
       # Is the response a soap-fault?
       unless soap_fault.nil?
         return on_fault(soap_fault)
       end
       # Does the http-status indicate an error?
-      if response.status >= 400
+      if response.response_header.status >= 400
         return on_http_error(response)
       end
       # Does the response contain a valid xml-document?
@@ -445,7 +445,7 @@ module Handsoap
       on_response_document(xml_document)
       return SoapResponse.new(xml_document, response)
     end
-
+    
     # Creates a standard SOAP envelope and yields the +Body+ element.
     def make_envelope # :yields: Handsoap::XmlMason::Element
       doc = XmlMason::Document.new do |doc|
