@@ -17,11 +17,11 @@ module Handsoap
           end
           case request.http_method
           when :get
-            emdef = emr.get(:head => request.headers)
+            emdef = emr.get(:head => request.headers.map(&:flatten))
           when :post
-            emdef = emr.post(:head => request.headers, :body => request.body)
+            emdef = emr.post(:head => request.headers.map(&:flatten), :body => request.body)
           when :put
-            emdef = emr.put(:head => request.headers, :body => request.body)
+            emdef = emr.put(:head => request.headers.map(&:flatten), :body => request.body)
           when :delete
             emdef = emr.delete
           else
