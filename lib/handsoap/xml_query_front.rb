@@ -342,19 +342,15 @@ module Handsoap
         @element.serialize(:encoding => 'UTF-8', :save_with => Nokogiri::XML::Node::SaveOptions::AS_XML)
       end
       def to_s
-        if @element.kind_of?(Nokogiri::XML::Text) || @element.kind_of?(Nokogiri::XML::CDATA)
-          element = @element
-        elsif @element.kind_of?(Nokogiri::XML::Attr)
-          return @element.value
+        case @element
+        when nil
+          ""
+        when Nokogiri::XML::Attr
+          @element.value
+        when Nokogiri::XML::Text, Nokogiri::XML::CDATA
+          @element.text
         else
-          element = @element.children.first
-        end
-        return if element.nil?
-        # This looks messy because it is .. Nokogiri's interface is in a flux
-        if element.kind_of?(Nokogiri::XML::CDATA)
-          element.serialize(:encoding => 'UTF-8').gsub(/^<!\[CDATA\[/, "").gsub(/\]\]>$/, "")
-        else
-          element.serialize(:encoding => 'UTF-8').gsub('&lt;', '<').gsub('&gt;', '>').gsub('&quot;', '"').gsub('&apos;', "'").gsub('&amp;', '&')
+          @element.content
         end
       end
     end

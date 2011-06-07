@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-require 'rubygems'
-require 'test/unit'
+require 'test_helper'
 require 'rails_generator'
 require 'rails_generator/scripts/generate'
 require "#{File.dirname(__FILE__)}/../generators/handsoap/handsoap_generator.rb"
@@ -25,7 +24,7 @@ class HandsoapGeneratorTest < Test::Unit::TestCase
   end
 
   def invoke_generator!
-    Rails::Generator::Scripts::Generate.new.run(["handsoap", "https://mooshup.com/services/system/version?wsdl", "--backtrace", "--quiet"], :destination => fake_rails_root)
+    Rails::Generator::Scripts::Generate.new.run(["handsoap", "tests/id_service.wsdl", "--backtrace", "--quiet"], :destination => fake_rails_root)
   end
 
   def test_can_invoke_generator
@@ -34,10 +33,10 @@ class HandsoapGeneratorTest < Test::Unit::TestCase
 
   def test_generator_creates_files
     invoke_generator!
-    assert file_list.find {|name| name.match("app/models/version_service.rb") }
-    assert file_list.find {|name| name.match("test/integration/version_service_test.rb") }
-    assert File.read(fake_rails_root + "/app/models/version_service.rb").any?
-    assert File.read(fake_rails_root + "/test/integration/version_service_test.rb").any?
+    assert file_list.find {|name| name.match("app/models/id_service.rb") }
+    assert file_list.find {|name| name.match("test/integration/id_service_test.rb") }
+    assert File.read(fake_rails_root + "/app/models/id_service.rb").any?
+    assert File.read(fake_rails_root + "/test/integration/id_service_test.rb").any?
   end
 
   def test_running_generator_twice_silently_skips_files
@@ -46,7 +45,7 @@ class HandsoapGeneratorTest < Test::Unit::TestCase
   end
 
   def test_can_parse_multiple_interfaces
-    wsdl_file = File.join(File.dirname(__FILE__), 'Weather.wsdl')
+    wsdl_file = File.join(File.dirname(__FILE__), 'id_service.wsdl')
     Rails::Generator::Scripts::Generate.new.run(["handsoap", wsdl_file, "--backtrace", "--quiet"], :destination => fake_rails_root)
   end
 

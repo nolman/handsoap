@@ -219,6 +219,10 @@ module Handsoap
         if options.kind_of? String
           options = { :soap_action => options }
         end
+
+        options[:http_options] ||= {}
+        options[:http_options] = {:ssl_verify_mode => OpenSSL::SSL::VERIFY_PEER}.merge(options[:http_options])
+
         if options[:soap_action] == :auto
           options[:soap_action] = action.gsub(/^.+:/, "")
         elsif options[:soap_action] == :none
@@ -281,7 +285,7 @@ module Handsoap
         elsif options[:soap_action] == :none
           options[:soap_action] = nil
         end
-        doc = make_envelope do |body|
+        doc = make_envelope do |body,_|
           body.add action
         end
         dispatcher.request_block.call doc.find(action)
@@ -406,6 +410,7 @@ module Handsoap
       if http_options
         request.set_trust_ca_file(http_options[:trust_ca_file]) if http_options[:trust_ca_file]
         request.set_client_cert_files(http_options[:client_cert_file], http_options[:client_cert_key_file]) if http_options[:client_cert_file] && http_options[:client_cert_key_file]
+        request.set_ssl_verify_mode(http_options[:ssl_verify_mode]) if http_options[:ssl_verify_mode]
       end
       
       headers.each do |key, value|
